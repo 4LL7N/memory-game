@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { MemoryGame } from "../App"
 import { useParams } from "react-router-dom"
 import Igmenu from "./Igmenu"
+import Gameend from "./Gameend"
 
 interface MemoryGame{
     Theme:boolean,
@@ -25,6 +26,7 @@ function Game(){
     const buttonNum = useRef<string[]>([])
     let playerNum = []
     const [timer,setTimer] = useState<string>("00:00")
+    let gameTime = useRef<number|undefined>()
     const render = useRef(1)
     const [igmenu, setIgmenu] = useState<boolean>(false)
 
@@ -35,14 +37,15 @@ function Game(){
     const [guessed, setGuessed] = useState<any[]>([])
 
     // const [match, setmatch] = useState<boolean>(false)
-
+    const [gameEnd, setGameEnd] = useState<boolean>(false)
+    const guessArr = useRef<any>([[],[]])
     useEffect(() => {
         render.current += 1
     })
 
-    // useEffect(() => {
-    //     setInterval( Timer , 1000)
-    // },[])
+    useEffect(() => {
+       gameTime.current = setInterval( Timer , 1000)
+    },[])
 
     // useEffect(() => {
     if(render.current == 1){ 
@@ -116,15 +119,32 @@ function Game(){
     // console.log(guessed);
 
     function play(){
-        console.log("render",render.current);
+        console.log("renderrrrrrrrrrrrrrrrrrrrrrrrrr",render.current);
         
+        console.log("in play" ,guessM);
         
-            if( guessM[0].length == 2 && guessM[1].le && guessM[0][0] == guessM[1][0]){
-                setGuessed([...guessed,guessM[0][1],guessM[1][1]])
+        if( guessM[0].length == 2 && guessM[1].length == 2 && guessM[0][0] == guessM[1][0]){
+            setGuessed([...guessed,guessM[0][1],guessM[1][1]])
+
+            // if(guessed.length == 14 ){
+            //     console.log("in clear interval");
+                
+                // clearInterval(gameTime.current)
+            //     setGameEnd(true)
+            // }
             // setmatch(true)
             // console.log( "guess 1",guessM);
-            }
+        }
         
+
+        if(context.grid){
+            console.log("in gridddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+            console.log("guessM[0]",guessM[0] );
+            console.log("guessM[1]",guessM[1]);
+            
+            
+            
+        }
         // setGuessM([])
         // console.log( "guess 2",guessM);
 
@@ -158,7 +178,7 @@ function Game(){
                 <section className="flex flex-col " >
                     <div key={Math.floor(Math.random() * Math.random())} className={`flex flex-wrap mb-[102px]  ${buttonNum.current.length == 36?"gap-x-[9.12px] gap-y-[9.12px]":"gap-x-[12.29px] gap-y-[12.29px]"} pt-[80px] `} >
                         {buttonNum.current.map((items,index) => {
-                            let guessArr:any[] = [[],[]]
+                            
                             // if(guessM.length == 2){
                             //     guessArr = [[items,index]]
                             // }else if(guessM.length == 1){
@@ -166,7 +186,7 @@ function Game(){
                             // }
                             // console.log(guessM[0]?guessM[0]:"nope")
                             // console.log(index);
-                            console.log(guessArr.length);
+                            console.log(guessArr.current.length);
                             // console.log(guessM);
                             
                             
@@ -176,7 +196,7 @@ function Game(){
 
                             return(
                                 <>
-                                    <div key={index} className={`flex items-center justify-center ${buttonNum.current.length == 36 ?"w-[46.878px] h-[46.878px]":"w-[72.53px] h-[72.53px]"} rounded-[50%] ${guessed.includes(index)?"bg-[#BCCED9]":guessM.length == 2 && guessM[0][0] == guessM[1][0] && guessM[1][0] == items ?"bg-[#FDA214]":"bg-[#304859]"} `} onClick={ !guessed.includes(index) ?() =>{ console.log(guessM.length) ;guessM.length==2?guessArr=[[items,index]]:guessM.length == 1?guessArr=[guessM[0],[items,index]]:null ;setGuessM(guessArr);guessM.length >= 2?play():console.log("guessM in not 2 element");console.log("guessArr[0] " ,guessArr[0]) ;console.log("guessArr[0] not includes index " ,!guessArr[0].includes(index));console.log("index " ,index)}:() => {}}  ><p key={index  * Math.random()} className={`${buttonNum.current.length == 36?"text-[24px]":"text-[40px]"} ${guessed.includes(index) || guessArr[0].includes(index) ?"":"hidden"} text-[#FCFCFC] `}>{items}</p></div>{/**/}{/*guessM[1]?Number(guessM[1][1]) == index:*/}
+                                    <div key={index} className={`flex items-center justify-center ${buttonNum.current.length == 36 ?"w-[46.878px] h-[46.878px]":"w-[72.53px] h-[72.53px]"} rounded-[50%] ${guessed.includes(index)?"bg-[#BCCED9]":guessM.length == 2 && guessM[0][0] == guessM[1][0] && guessM[1][0] == items ?"bg-[#FDA214]":"bg-[#304859]"} `} onClick={ !guessed.includes(index) ?() =>{guessM.length==2?guessArr.current = [[items,index]]:guessM.length == 1?guessArr.current=[guessM[0],[items,index]]:null;  console.log("guessArr",guessArr.current.length) ;setGuessM(guessArr.current);guessM.length >= 2?play():console.log("guessM in not 2 element");console.log("guessArr[0] " ,guessArr.current[0]) ;console.log("guessArr[0] includes index " ,guessArr.current[0].includes(index));console.log("index " ,index);guessed.length == 14 && guessArr.current[0][0] == guessArr.current[1][0]?setGameEnd(true):null;guessed.length == 14 && guessArr.current[0][0] == guessArr.current[1][0]?clearInterval(gameTime.current):null}:() => {}}  ><p key={index  * Math.random()} className={`${buttonNum.current.length == 36?"text-[24px]":"text-[40px]"} ${guessed.includes(index) || guessM[0].includes(index) || guessM[1]?.includes(index) ?"":"hidden"} text-[#FCFCFC] `}>{items}</p></div>{/**/}{/*guessM[1]?Number(guessM[1][1]) == index:*/}
                                 </>
                             )
                         })}
@@ -196,14 +216,15 @@ function Game(){
                             </div>
                             <div className=" w-[151px] h-[70px] py-[10px] bg-[#DFE7EC] flex flex-col items-center rounded-[5px]" >
                                 <p className="text-[15px] text-[#7191A5] " >Move</p>
-                                <h1 className='text-[24px] text-[#304859] ' >{pMoves}</h1>
+                                <h1 className='text-[24px] text-[#304859] ' >{pMoves - 1}</h1>
                             </div>
                         </div>
                         }
                     </div>
                 </section>
-                <div className={`  ${!igmenu?"duration-700 hidden ":"duration-700 block "}  w-[100%] h-[100%] absolute top-0 left-0 bg-[#000000] opacity-50 `} />
+                <div className={`  ${igmenu || gameEnd ?"duration-700 block ":"duration-700 hidden "}  w-[100%] h-[100%] absolute top-0 left-0 bg-[#000000] opacity-50 `} />
                 <Igmenu igmenu={igmenu} setIgmenu={setIgmenu} buttonNum={buttonNum.current} timer={timer} setTimer={setTimer} />
+                <Gameend  gameEnd={gameEnd} setGameEnd={setGameEnd} timer={timer} pMoves={pMoves} />
             </div>
         </>
     )
