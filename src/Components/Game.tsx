@@ -13,43 +13,38 @@ interface MemoryGame{
     setGrid:(grid:boolean) => void
 }
 
-// interface Move{
-//     [
-//     number,
-//     string  
-//     ]
-// }
-
 function Game(){
     const params = useParams()
     const context = useContext<MemoryGame>(MemoryGame)
     const buttonNum = useRef<string[]>([])
-    let playerNum = []
+    let IGplayerNum = useRef<number[]>([])
     const [timer,setTimer] = useState<string>("00:00")
     let gameTime = useRef<number|undefined>()
     const render = useRef(1)
     const [igmenu, setIgmenu] = useState<boolean>(false)
-
     const [pMoves,setPMoves] = useState<number>(0)
-
     const [guessM,setGuessM] = useState<any[]>([[],[]])
-    // const [secondM, setSecondM] = useState<string|undefined>()
     const [guessed, setGuessed] = useState<any[]>([])
-
-    // const [match, setmatch] = useState<boolean>(false)
     const [gameEnd, setGameEnd] = useState<boolean>(false)
     const guessArr = useRef<any>([[],[]])
+    const [pTurn,setPTurn] = useState<number>(0)
+    const [winner, setWinner] = useState(false)
     useEffect(() => {
         render.current += 1
     })
 
     useEffect(() => {
-       gameTime.current = setInterval( Timer , 1000)
+        if(params.game == "solo"){
+            gameTime.current = setInterval( Timer , 1000)
+        }else{
+            for(let i = 0 ; i < context.playerNum ; i++){
+                IGplayerNum.current.push(0)
+            }   
+        }
+        
     },[])
 
-    // useEffect(() => {
     if(render.current == 1){ 
-        // console.log(render.current)
 
         if(context.grid){
             for(let i = 0 ; i < 16 ; i++ ){
@@ -87,68 +82,50 @@ function Game(){
             }
         }
     }
-    // },[])
+        
+    console.log(IGplayerNum.current);
     
-    console.log(buttonNum.current);
-    
-
-    if(params.game == "/multiplayer"){
-        for(let i = 0 ; i < context.playerNum ; i++){
-            playerNum.push("")
-        }   
-    }
     
     useEffect(() => {
         if(guessM.length == 2 ){
-            setPMoves(pMoves + 1)
-            // play()
-            
-            
-            
+            setPMoves(pMoves + 1)            
         }
     },[guessM])
-    // if(guessM.length == 2 ){
-    //     setGuessM([])
-    // }
-
-    // console.log(guessM);
-    // console.log(guessM.length);
-    // console.log(guessM[0] == guessM[1]);
-    
-
-    // console.log(guessed);
 
     function play(){
-        console.log("renderrrrrrrrrrrrrrrrrrrrrrrrrr",render.current);
-        
-        console.log("in play" ,guessM);
         
         if( guessM[0].length == 2 && guessM[1].length == 2 && guessM[0][0] == guessM[1][0]){
             setGuessed([...guessed,guessM[0][1],guessM[1][1]])
-
-            // if(guessed.length == 14 ){
-            //     console.log("in clear interval");
-                
-                // clearInterval(gameTime.current)
-            //     setGameEnd(true)
-            // }
-            // setmatch(true)
-            // console.log( "guess 1",guessM);
         }
         
-
-        if(context.grid){
-            console.log("in gridddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
-            console.log("guessM[0]",guessM[0] );
-            console.log("guessM[1]",guessM[1]);
-            
-            
-            
+        if(params.game != "solo" && pTurn != (IGplayerNum.current.length -1) && guessM[0].length > 0){
+            if( guessM[0][0] == guessM[1][0]){
+                IGplayerNum.current[pTurn] += 1
+            }else{
+                setPTurn(pTurn + 1)
+            }
+        }else{
+            setPTurn(0)
         }
-        // setGuessM([])
-        // console.log( "guess 2",guessM);
-
+       
     }
+
+    console.log(guessed);
+
+    function end(){
+        if(params.game == "solo"){
+            if(guessed.length == 14 && guessArr.current[0][0] == guessArr.current[1][0]){
+                setGameEnd(true)
+                clearInterval(gameTime.current)
+            }
+        }else{
+            if(guessed.length == 14 && guessArr.current[0][0] == guessArr.current[1][0]){
+                IGplayerNum.current[pTurn] += 1
+                setWinner(true)
+            }
+        }
+    }
+
 
     let second = 0
     let minute = 0
@@ -156,7 +133,6 @@ function Game(){
     function Timer(){
         if(second < 59){
             second += 1   
-            // console.log(second.toString().length);
         }else{
             minute += 1
             second = 0
@@ -164,10 +140,6 @@ function Game(){
         setTimer(`${minute.toString().length == 1 ?"0":""}${minute}:${second.toString().length == 1?"0":""}${second}`)
     }
 
-
-    
-    console.log("guessM " ,guessM);
-    console.log("guessed " ,guessed);
     return(
         <>
             <div className="w-[100vw] h-[100vh] bg-[#FCFCFC] p-[24px] " >
@@ -178,34 +150,24 @@ function Game(){
                 <section className="flex flex-col " >
                     <div key={Math.floor(Math.random() * Math.random())} className={`flex flex-wrap mb-[102px]  ${buttonNum.current.length == 36?"gap-x-[9.12px] gap-y-[9.12px]":"gap-x-[12.29px] gap-y-[12.29px]"} pt-[80px] `} >
                         {buttonNum.current.map((items,index) => {
-                            
-                            // if(guessM.length == 2){
-                            //     guessArr = [[items,index]]
-                            // }else if(guessM.length == 1){
-                            //     guessArr = [...guessM,[items,index]]
-                            // }
-                            // console.log(guessM[0]?guessM[0]:"nope")
-                            // console.log(index);
-                            console.log(guessArr.current.length);
-                            // console.log(guessM);
-                            
-                            
-                            // guessM[0]? Number(guessM[0][1]) == index?console.log("equla"):console.log("not equal"):guessM[0]
-                            
-                            
-
+                           
                             return(
                                 <>
-                                    <div key={index} className={`flex items-center justify-center ${buttonNum.current.length == 36 ?"w-[46.878px] h-[46.878px]":"w-[72.53px] h-[72.53px]"} rounded-[50%] ${guessed.includes(index)?"bg-[#BCCED9]":guessM.length == 2 && guessM[0][0] == guessM[1][0] && guessM[1][0] == items ?"bg-[#FDA214]":"bg-[#304859]"} `} onClick={ !guessed.includes(index) ?() =>{guessM.length==2?guessArr.current = [[items,index]]:guessM.length == 1?guessArr.current=[guessM[0],[items,index]]:null;  console.log("guessArr",guessArr.current.length) ;setGuessM(guessArr.current);guessM.length >= 2?play():console.log("guessM in not 2 element");console.log("guessArr[0] " ,guessArr.current[0]) ;console.log("guessArr[0] includes index " ,guessArr.current[0].includes(index));console.log("index " ,index);guessed.length == 14 && guessArr.current[0][0] == guessArr.current[1][0]?setGameEnd(true):null;guessed.length == 14 && guessArr.current[0][0] == guessArr.current[1][0]?clearInterval(gameTime.current):null}:() => {}}  ><p key={index  * Math.random()} className={`${buttonNum.current.length == 36?"text-[24px]":"text-[40px]"} ${guessed.includes(index) || guessM[0].includes(index) || guessM[1]?.includes(index) ?"":"hidden"} text-[#FCFCFC] `}>{items}</p></div>{/**/}{/*guessM[1]?Number(guessM[1][1]) == index:*/}
+                                    <div key={index} className={`flex items-center justify-center ${buttonNum.current.length == 36 ?"w-[46.878px] h-[46.878px]":"w-[72.53px] h-[72.53px]"} rounded-[50%] ${guessed.includes(index)?"bg-[#BCCED9]":guessM.length == 2 && guessM[0][0] == guessM[1][0] && guessM[1][0] == items ?"bg-[#FDA214]":"bg-[#304859]"} `} onClick={ !guessed.includes(index) ?() =>{guessM.length==2?guessArr.current = [[items,index]]:guessM.length == 1?guessArr.current=[guessM[0],[items,index]]:null;setGuessM(guessArr.current);guessM.length >= 2?play():null;end()}:() => {}}  ><p key={index  * Math.random()} className={`${buttonNum.current.length == 36?"text-[24px]":"text-[40px]"} ${guessed.includes(index) || guessM[0].includes(index) || guessM[1]?.includes(index) ?"":"hidden"} text-[#FCFCFC] `}>{items}</p></div>{/**/}{/*guessM[1]?Number(guessM[1][1]) == index:*/}
                                 </>
                             )
                         })}
                     </div>
-                    <div>
-                        {playerNum.length > 1? playerNum.map((items,index) => {
+                    <div className={IGplayerNum.current.length > 1?`flex items-center ${IGplayerNum.current.length == 2?"justify-around":"justify-between"} w-[100%]`:""} >
+                        {IGplayerNum.current.length > 1? IGplayerNum.current.map((items,index) => {
+                            console.log(IGplayerNum)
                             return(
                                 <>
-                                    <div key={index * (Math.random() * Math.random())} className={`w-[64px] h-[70px] ${"bg-[#DFE7EC]"} rounded-[5px]`} ><p className={`${buttonNum.current.length == 36?"text-[24px]":"text-[40px]"} text-[#FCFCFC] `}   >{items}</p></div>
+                                    <div key={index * (Math.random() * Math.random())} className={`w-[64px] h-[70px] flex flex-col gap-[2px] items-center justify-center ${pTurn == index?"bg-[#FDA214]":"bg-[#DFE7EC]"} rounded-[5px] relative `} >
+                                        <p className={`text-[15px] ${pTurn == index?"text-[#FCFCFC]":"text-[#7191A5]"} `} >P{index + 1}</p>
+                                        <p className={`text-[24px] ${pTurn == index?"text-[#FCFCFC]":"text-[#304859]"} `}>{items}</p>
+                                        <div className={`${pTurn == index?"":"hidden"}  w-[15px] h-[15px] ${"bg-[#FDA214]"} absolute left-[25px] top-[-8px] transform rotate-45 `} ></div>
+                                    </div>
                                 </>
                             )
                         }):

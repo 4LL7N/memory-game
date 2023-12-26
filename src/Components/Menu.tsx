@@ -14,7 +14,8 @@ interface MemoryGame{
 function Menu(){
 
     const context = useContext<MemoryGame>(MemoryGame)
-
+    console.log("menuuu8uuuuuuuuuu");
+    
     return(
         <>
             <div className="w-[100vw] h-[100vh] bg-[#152938] flex flex-col items-center pt-[80px] " >
