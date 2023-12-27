@@ -3,6 +3,7 @@ import { MemoryGame } from "../App"
 import { useParams } from "react-router-dom"
 import Igmenu from "./Igmenu"
 import Gameend from "./Gameend"
+import Winner from "./Winner"
 
 interface MemoryGame{
     Theme:boolean,
@@ -17,7 +18,7 @@ function Game(){
     const params = useParams()
     const context = useContext<MemoryGame>(MemoryGame)
     const buttonNum = useRef<string[]>([])
-    let IGplayerNum = useRef<number[]>([])
+    const IGplayerNum = useRef<number[]>([])
     const [timer,setTimer] = useState<string>("00:00")
     let gameTime = useRef<number|undefined>()
     const render = useRef(1)
@@ -83,7 +84,7 @@ function Game(){
         }
     }
         
-    console.log(IGplayerNum.current);
+    // console.log(IGplayerNum.current);
     
     
     useEffect(() => {
@@ -107,10 +108,10 @@ function Game(){
         }else{
             setPTurn(0)
         }
-       
+        console.log(IGplayerNum)
     }
 
-    console.log(guessed);
+    // console.log(guessed);
 
     function end(){
         if(params.game == "solo"){
@@ -123,6 +124,8 @@ function Game(){
                 IGplayerNum.current[pTurn] += 1
                 setWinner(true)
             }
+            console.log("end");
+            
         }
     }
 
@@ -159,8 +162,8 @@ function Game(){
                         })}
                     </div>
                     <div className={IGplayerNum.current.length > 1?`flex items-center ${IGplayerNum.current.length == 2?"justify-around":"justify-between"} w-[100%]`:""} >
-                        {IGplayerNum.current.length > 1? IGplayerNum.current.map((items,index) => {
-                            console.log(IGplayerNum)
+                        {IGplayerNum.current.length > 1? IGplayerNum.current.map((items:number,index:number) => {
+                            // console.log(index, items)
                             return(
                                 <>
                                     <div key={index * (Math.random() * Math.random())} className={`w-[64px] h-[70px] flex flex-col gap-[2px] items-center justify-center ${pTurn == index?"bg-[#FDA214]":"bg-[#DFE7EC]"} rounded-[5px] relative `} >
@@ -184,9 +187,10 @@ function Game(){
                         }
                     </div>
                 </section>
-                <div className={`  ${igmenu || gameEnd ?"duration-700 block ":"duration-700 hidden "}  w-[100%] h-[100%] absolute top-0 left-0 bg-[#000000] opacity-50 `} />
+                <div className={`  ${igmenu || gameEnd || winner?"duration-700 block ":"duration-700 hidden "}  w-[100%] h-[100%] absolute top-0 left-0 bg-[#000000] opacity-50 `} />
                 <Igmenu igmenu={igmenu} setIgmenu={setIgmenu} buttonNum={buttonNum.current} timer={timer} setTimer={setTimer} />
                 <Gameend  gameEnd={gameEnd} setGameEnd={setGameEnd} timer={timer} pMoves={pMoves} />
+                <Winner  winner={winner} setWinner={setWinner} IGplayerNum={IGplayerNum.current} />
             </div>
         </>
     )
