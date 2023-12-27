@@ -98,17 +98,29 @@ function Game(){
         if( guessM[0].length == 2 && guessM[1].length == 2 && guessM[0][0] == guessM[1][0]){
             setGuessed([...guessed,guessM[0][1],guessM[1][1]])
         }
+        // console.log(IGplayerNum.current.length);
+        // console.log( pTurn)
+        // console.log(guessM[0].length > 0);
         
-        if(params.game != "solo" && pTurn != (IGplayerNum.current.length -1) && guessM[0].length > 0){
+        if(params.game != "solo" && pTurn != (IGplayerNum.current.length - 1) && guessM[0].length > 0){
+            // setPTurn(pTurn + 1)
+
+            console.log(guessM[0][0])
+            console.log(guessM[1][0])
+            console.log(guessM[0][0] == guessM[1][0]);
             if( guessM[0][0] == guessM[1][0]){
+                // console.log(pTurn);
+                
                 IGplayerNum.current[pTurn] += 1
             }else{
+                // console.log( "next player ",pTurn);
+                
                 setPTurn(pTurn + 1)
             }
         }else{
             setPTurn(0)
         }
-        console.log(IGplayerNum)
+        // console.log(IGplayerNum.current)
     }
 
     // console.log(guessed);
