@@ -35,10 +35,6 @@ function Game() {
   useEffect(() => {
     render.current += 1;
   });
-//   console.log(IGplayerNum.current);
-//   console.log(Array.from({length:context.playerNum},() => 0));
-  
-  
   useEffect(() => {
     if (params.game == "solo") {
       gameTime.current = setInterval(Timer, 1000);
@@ -80,9 +76,6 @@ function Game() {
       }
     }
   }
-
-  // console.log(IGplayerNum.current);
-
   useEffect(() => {
     if (guessM.length == 2) {
       setPMoves(pMoves + 1);
@@ -90,9 +83,6 @@ function Game() {
   }, [guessM]);
 
   function play() {
-    console.log(guessArr?.current[0].length == 2)
-    console.log(guessArr?.current[1].length == 2)
-    console.log(guessArr.current[0][0] == guessArr.current[1][0])
     if (
       guessArr?.current[0].length == 2 &&
       guessArr?.current[1].length == 2 &&
@@ -100,22 +90,14 @@ function Game() {
     ) {
       setGuessed([...guessed, guessArr.current[0][1], guessArr.current[1][1]]);
     }
-    
-
     if (
       params.game != "solo" &&
       pTurn != IGplayerNum.current.length  &&
       guessArr.current[0].length > 0
-    ) {
-      // setPTurn(pTurn + 1)
-
-      
+    ) {      
       if (guessArr.current[0][0] == guessArr.current[1][0] ) {
-        // console.log(pTurn);
-
         IGplayerNum.current[pTurn] += 1;
       } else {
-        // console.log( "next player ",pTurn);
         if(pTurn != 2){
             setPTurn(pTurn + 1);
         }else{
@@ -125,11 +107,7 @@ function Game() {
     } else {
       setPTurn(0);
     }
-    // console.log(IGplayerNum.current)
   }
-
-  // console.log(guessed);
-
   function end() {
     if (params.game == "solo") {
       if (
@@ -144,10 +122,8 @@ function Game() {
         guessed.length == 14 &&
         guessArr.current[0][0] == guessArr.current[1][0]
       ) {
-        IGplayerNum.current[pTurn] += 1;
         setWinner(true);
       }
-      console.log("end");
     }
   }
 
@@ -315,8 +291,9 @@ function Game() {
                           pTurn == index ? "" : "hidden"
                         }  w-[15px] lg:w-[20px] h-[15px] lg:h-[20px] ${"bg-[#FDA214]"} absolute left-[25px] md:left-[75px] lg:left-[117px] top-[-8px] transform rotate-45 `}
                       ></div>
+                      
                     </div>
-                        <p className={`text-[13px]  ${pTurn == index ?"text-[#152938]":"text-[transparent]"} tracking-[5px] mt-[23px] `} >CURRENT TURN</p>
+                        {window.screen.width >= 1024?(<p className={`text-[13px]  ${pTurn == index ?"text-[#152938]":"text-[transparent]"} tracking-[5px] mt-[23px] `} >CURRENT TURN</p>):null}
                     </div>
                   </>
                 );
