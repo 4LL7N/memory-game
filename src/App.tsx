@@ -11,7 +11,7 @@ function App() {
   const [Theme, setTheme] = useState<boolean>(true)
   const [playerNum, setPlayerNum] = useState<number>(1)
   const [grid , setGrid] = useState<boolean>(true)
-
+  
   const router = createBrowserRouter([
     {
       path:"/",
